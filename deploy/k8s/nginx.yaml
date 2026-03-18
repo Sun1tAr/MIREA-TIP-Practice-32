@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tip-practice-32-ingress
+  namespace: tip-practice-32
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: tip32.example.com   # замените на ваш домен или IP (можно 32.64.128.12.nip.io)
+      http:
+        paths:
+          - path: /MIREA/TIP-Practice/32/v1/auth(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 8081
+          - path: /MIREA/TIP-Practice/32(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: tasks-service
+                port:
+                  number: 8082
+          - path: /MIREA/TIP-Practice/32/graphql(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: graphql-service
+                port:
+                  number: 8090

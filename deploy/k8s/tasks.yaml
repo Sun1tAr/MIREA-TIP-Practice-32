@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+  namespace: tip-practice-32
+spec:
+  selector:
+    app: tasks
+  ports:
+    - port: 8082
+      targetPort: 8082
+      name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks
+  namespace: tip-practice-32
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: tasks
+          image: ghcr.io/sun1tar/mirea-tip-practice-32/tasks:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+              name: http
+          env:
+            - name: TASKS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: TASKS_PORT
+            - name: AUTH_GRPC_ADDR
+              value: "auth-service:50051"
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_PORT
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_NAME
+            - name: DB_DRIVER
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_DRIVER
+            - name: REDIS_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_ADDR
+            - name: REDIS_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_DB
+            - name: CACHE_TTL_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CACHE_TTL_SECONDS
+            - name: CACHE_TTL_JITTER_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CACHE_TTL_JITTER_SECONDS
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: RABBITMQ_URL
+            - name: RABBITMQ_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RABBITMQ_QUEUE
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: LOG_LEVEL
+            - name: INSTANCE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "400m"
