@@ -125,7 +125,7 @@ docker build -t ghcr.io/sun1tar/mirea-tip-practice-32/graphql:health-v1 ./tech-i
 
 ```powershell
 # Логин в GHCR (используется GitHub токен)
-echo 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 | docker login ghcr.io -u sun1tar --password-stdin
+echo your_git_access_token | docker login ghcr.io -u sun1tar --password-stdin
 
 # Публикация образов
 docker push ghcr.io/sun1tar/mirea-tip-practice-32/auth:health-v1
@@ -142,7 +142,7 @@ kubectl create namespace tip-practice-32
 kubectl create secret docker-registry ghcr-secret \
   --docker-server=ghcr.io \
   --docker-username=sun1tar \
-  --docker-password="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" \
+  --docker-password="your_git_access_token" \
   --namespace=tip-practice-32
 ```
 
