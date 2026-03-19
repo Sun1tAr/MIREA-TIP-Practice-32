@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/shared/health"
 	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/shared/logger"
 	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/shared/middleware"
 	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/tasks/internal/cache"
@@ -99,8 +100,9 @@ func main() {
 	// Настройка роутера
 	mux := http.NewServeMux()
 
-	// Health endpoint (не требует аутентификации)
-	mux.HandleFunc("GET /health", taskHandler.HealthHandler)
+	// Health checks для Kubernetes
+	mux.HandleFunc("GET /health", health.HealthHandler("tasks"))
+	mux.HandleFunc("GET /ready", health.ReadyHandler("tasks"))
 
 	// Основные endpoints
 	mux.HandleFunc("POST /v1/tasks", taskHandler.CreateTask)

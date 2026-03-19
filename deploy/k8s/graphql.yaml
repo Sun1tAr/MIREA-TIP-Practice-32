@@ -25,9 +25,11 @@ spec:
       labels:
         app: graphql
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: graphql
-          image: ghcr.io/sun1tar/mirea-tip-practice-32/graphql:latest
+          image: ghcr.io/sun1tar/mirea-tip-practice-32/graphql:health-v1
           imagePullPolicy: Always
           ports:
             - containerPort: 8090
@@ -80,7 +82,7 @@ spec:
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: 8090
             initialDelaySeconds: 30
             periodSeconds: 10

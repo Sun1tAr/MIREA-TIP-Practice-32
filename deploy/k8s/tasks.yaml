@@ -30,9 +30,11 @@ spec:
         prometheus.io/port: "8082"
         prometheus.io/path: "/metrics"
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: tasks
-          image: ghcr.io/sun1tar/mirea-tip-practice-32/tasks:latest
+          image: ghcr.io/sun1tar/mirea-tip-practice-32/tasks:health-v1
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
@@ -122,14 +124,14 @@ spec:
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: 8082
             initialDelaySeconds: 30
             periodSeconds: 10
           resources:
             requests:
               memory: "128Mi"
-              cpu: "200m"
+              cpu: "50m"
             limits:
               memory: "256Mi"
-              cpu: "400m"
+              cpu: "200m"

@@ -14,6 +14,7 @@ import (
 	httpHandler "github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/auth/internal/http"
 	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/auth/internal/service"
 	pb "github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/proto/auth"
+	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/shared/health"
 	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/shared/logger"
 	"github.com/sun1tar/MIREA-TIP-Practice-32/tech-ip-sem2/shared/middleware"
 )
@@ -30,7 +31,12 @@ func main() {
 		}
 
 		mux := http.NewServeMux()
+		// Основные хендлеры API
 		mux.HandleFunc("POST /v1/auth/login", httpHandler.LoginHandler)
+
+		// Health checks для Kubernetes
+		mux.HandleFunc("GET /health", health.HealthHandler("auth"))
+		mux.HandleFunc("GET /ready", health.ReadyHandler("auth"))
 
 		handler := middleware.RequestIDMiddleware(mux)
 		handler = middleware.LoggingMiddleware(handler)
