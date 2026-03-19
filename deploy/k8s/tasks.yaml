@@ -34,7 +34,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: tasks
-          image: ghcr.io/sun1tar/mirea-tip-practice-32/tasks:health-v1
+          image: ghcr.io/sun1tar/mirea-tip-practice-32/tasks:debug-v1
           imagePullPolicy: Always
           ports:
             - containerPort: 8082

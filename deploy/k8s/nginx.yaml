@@ -6,6 +6,14 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/use-regex: "true"
+    # Разрешаем подчёркивания в заголовках
+    nginx.ingress.kubernetes.io/enable-underscores-in-headers: "true"
+    # Явно передаём заголовок CSRF
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-CSRF-Token $http_x_csrf_token;
+      proxy_set_header X-CSRF-TOKEN $http_x_csrf_token;
+      proxy_set_header Cookie $http_cookie;
+      more_set_headers "X-CSRF-Token: $http_x_csrf_token";
 spec:
   ingressClassName: nginx
   rules:
